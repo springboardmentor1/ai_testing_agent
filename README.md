@@ -22,7 +22,8 @@ Set up everything needed to start building the AI testing agent.
 
 **What We Achieved:**
 - Python environment is ready for coding
-- Flask server is working at [http://127.0.0.1:5000/](http://127.0.0.1:5000/)
+- Flask server is running locally at `http://127.0.0.1:5000/`  
+  (Open this URL in your browser after running `python run.py`)
 - Baseline agent can receive inputs and give responses
 
 
