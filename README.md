@@ -1,7 +1,6 @@
-# AI_AGENT Project
+
 
 **Overview**
-AI_AGENT is a simple AI-based web testing agent built using **Flask** and **LangGraph**.  
 In **Milestone 1**, we set up the development environment, created a basic web server using Flask, and built a basic LangGraph agent that can receive and respond to user inputs.
 
 ---
