@@ -7,11 +7,11 @@ def home():
     return render_template("index.html")
 
 @app.route("/submit", methods=["POST"])
-def submit():
-    data = request.json
-    instruction = data.get("instruction", "")
+def submit_instruction():
+    instruction = request.json.get("instruction")
+    print("Received instruction:", instruction)  # backend proof
     return jsonify({
-        "message": "Received successfully",
+        "status": "received",
         "instruction": instruction
     })
 
