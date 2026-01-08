@@ -1,4 +1,20 @@
-#agent program
+from typing import TypedDict
+from langgraph.graph import StateGraph, END
+class AgentState(TypedDict):
+    input: str
+    output: str
+def respond(state: AgentState) -> AgentState:
+    user_input = state["input"]
 
-def run_agent(user_input: str) -> str:
-    return f"Echo from agent: {user_input}"
+    return {
+        "input": user_input,
+        "output": f"Echo from LangGraph agent: {user_input}"
+    }
+graph = StateGraph(AgentState)
+
+graph.add_node("respond", respond)      
+graph.set_entry_point("respond")        
+graph.add_edge("respond", END)          
+
+agent = graph.compile()
+
