@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Test Agent</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <h1>AI Test Agent | Base Setup</h1>
+
+        <input
+            id="instruction"
+            placeholder="Enter instruction"
+        />
+
+        <button id="submitBtn">Submit</button>
+
+        <pre id="response"></pre>
+    </div>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
