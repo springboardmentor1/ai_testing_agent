@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>AI Testing Agent</title>
+    <title>AI Web Testing Agent</title>
 </head>
+
 <body>
-    <h1>AI Testing Agent Dashboard</h1>
-    <p>Welcome Milestone 1</p>
+    <h1>Milestone 1 – Flask Setup</h1>
+
+    <input id="instruction" placeholder="Enter instruction" />
+    <button onclick="sendData()">Submit</button>
+
+    <p id="response"></p>
+
+    <script>
+        function sendData() {
+            const instruction = document.getElementById("instruction").value;
+
+            fetch("/submit", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ instruction })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("response").innerText = data.response;
+                });
+        }
+    </script>
 </body>
+
 </html>
