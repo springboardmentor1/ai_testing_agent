@@ -1,0 +1,45 @@
+Title: AI Agent to Test Websites Automatically Using Natural Language
+Milestone Number: 1(Week 1-2)
+Objective:
+The objective of this milestone is to build a structured foundation for an AI-based testing agent by setting up a clean development environment, initializing a Flask backend, and implementing a baseline LangGraph agent capable of handling user inputs, with scalability for future AI-driven testing workflows.
+Things that are performed:
+1.Setting up Python environment and Installing Dependencies:
+The steps performed are:
+  i)	Created a Python virtual environment inside the project directory to isolate dependencies: python -m venv .venv
+  ii)	Activated the virtual environment: .venv\Scripts\activate
+  iii)	Installed required dependencies: pip install flask langgraph playwright
+  iv)	Verified LangGraph installation: pip show langgraph
+
+
+2. Defining Project Structure and Initializing Flask Server
+Designed a clean, modular project structure and initialize a Flask server capable of serving a static HTML test page.
+ 
+Flask Server Setup was done by:
+  i)	Implementing Flask app in server.py to serve static content.
+  ii)	Configured the root route (/) to return index.html from the static folder.
+  iii)	Used run.py as the application entry point.
+  iv)   Started the Flask server using: python run.py
+  v)	Verified that the static HTML page loads correctly at http://127.0.0.1:5000. 
+
+ 
+
+3. Implementing Baseline LangGraph Agent Configuration
+Here, implementation of a minimal yet functional LangGraph agent capable of handling user input and producing structured output has been done.
+
+Agent Design and LangGraph Workflow
+   i)	Firstly, I defined a typed state using TypedDict to enforce input/output structure.
+   ii)	Implemented a simple response node that echoes user input.
+   iii)	Created a StateGraph with a single node (respond).
+   iv)	Following which, setting the entry point and terminated the graph using END.
+   v)	Finally, compiled the graph into an executable agent.
+
+ 
+Testing has been done by:
+   i)	Firstly, I imported the agent into testing.py.
+   ii)	Invoked the agent with a sample input: result = agent.invoke({"input": "Hello Agent!"})
+   iii)	Verified correct structured output in the console.
+ 
+Conclusion
+The above steps successfully establish the foundational architecture for the AI Testing Agent project. With a clean environment setup, structured backend, and a working baseline agent, the project is well-prepared for future expansion into advanced AI-driven testing workflows.
+
+Prepared By: Sayan Roy
