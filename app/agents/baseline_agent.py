@@ -1,19 +1,33 @@
-from typing import TypedDict
+from typing import TypedDict, List
 from langgraph.graph import StateGraph, END
+from app.parser import parse_instruction
 
+# 1. Define the State (Memory)
 class AgentState(TypedDict):
     input: str
+    parsed_commands: List[dict]  #  stores the JSON list here
     output: str
 
-def respond(state: AgentState) -> AgentState:
+# 2. Define the Node (The Work)
+def parse_node(state: AgentState):
+    user_input = state['input']
+    
+    # Calls Groq Parser
+    commands = parse_instruction(user_input)
+    
+    if not commands:
+        return {"output": "Failed to parse instruction."}
+
     return {
-        "input": state["input"],
-        "output": f"Echo: {state['input']}"
+        "parsed_commands": commands, 
+        "output": f"Successfully generated {len(commands)} steps."
     }
 
-graph = StateGraph(AgentState)
-graph.add_node("respond", respond)
-graph.set_entry_point("respond")
-graph.add_edge("respond", END)
+# 3. Build the Workflow Graph
+workflow = StateGraph(AgentState)
 
-agent = graph.compile()
+workflow.add_node("parser", parse_node)
+workflow.set_entry_point("parser")
+workflow.add_edge("parser", END)
+
+agent_app = workflow.compile()
