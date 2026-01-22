@@ -1,4 +1,3 @@
-# rule_parser.py
 def rule_based_parser(text: str):
     text = text.lower()
     actions = []
