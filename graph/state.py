@@ -1,4 +1,3 @@
-# graph/state.py
 from typing import TypedDict, List, Dict
 
 class ParserState(TypedDict):
