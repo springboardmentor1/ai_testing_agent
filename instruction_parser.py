@@ -1,3 +1,5 @@
+'''
+************************************************  mistralai/mistral-7b-instruct-v0.3   ************************************************
 from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from langchain_openai import ChatOpenAI
@@ -72,4 +74,108 @@ if __name__ == "__main__":
     })
 
     print("\nParsed Output:")
-    print(json.dumps(result["output"], indent=2))
+    print(json.dumps(result["output"], indent=2))'''
+
+#*******************************************************  models/gemini-flash-latest   *******************************************************
+from typing import TypedDict
+import json
+import re
+
+from google import genai
+from langgraph.graph import StateGraph, END
+client = genai.Client(
+    api_key="AIzaSyAllyh9u1zJbEejHYqUCRlF6sk2CH4A6dg"
+)
+
+#list available models
+'''available_models = client.models.list()
+print("Available models for generate_content:")
+for model in available_models:
+    print(model.name)'''
+
+MODEL_NAME = "models/gemini-flash-latest"
+class ParserState(TypedDict):
+    input: str
+    output: dict
+
+SYSTEM_PROMPT = """
+Convert the given test case into STRICT JSON.
+
+Rules:
+- Output ONLY valid JSON
+- No explanations
+- Fields:
+  - action (string)
+  - steps (array of strings)
+  - assertions (array of strings)
+"""
+def parse_instruction(state: ParserState) -> ParserState:
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=f"{SYSTEM_PROMPT}\n\nTest case:\n{state['input']}",
+        config={
+            "temperature": 0,
+            "max_output_tokens": 1024
+        }
+    )
+
+    text = response.text.strip()
+
+    # Remove markdown if present
+    text = re.sub(r"^```(json)?\s*", "", text)
+    text = re.sub(r"\s*```$", "", text)
+
+    # Extract JSON object
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match:
+        raise ValueError(f"Invalid JSON generated: {text}")
+
+    parsed = json.loads(match.group())
+
+    return {
+        "input": state["input"],
+        "output": parsed
+    }
+
+def validate_json(state: ParserState) -> ParserState:
+    required = {"action", "steps", "assertions"}
+    if not required.issubset(state["output"].keys()):
+        raise ValueError(f"Missing required JSON fields: {state['output'].keys()}")
+
+    return state
+
+graph = StateGraph(ParserState)
+
+graph.add_node("parse_instruction", parse_instruction)
+graph.add_node("validate_json", validate_json)
+
+graph.set_entry_point("parse_instruction")
+graph.add_edge("parse_instruction", "validate_json")
+graph.add_edge("validate_json", END)
+
+agent = graph.compile()
+
+
+if __name__ == "__main__":
+    print("LangGraph Instruction Parser (Gemini)")
+    print("-" * 50)
+
+    test_case = input("Enter test case: ")
+
+    try:
+        result = agent.invoke({"input": test_case})
+        print("\nParsed JSON Output:")
+        print(json.dumps(result["output"], indent=2))
+    except Exception as e:
+        print(f"\n Error: {e}")
+
+
+
+'''
+test cases:
+Navigate to login page, enter valid username and invalid password, click login and verify an error message is shown
+Open the login page, enter valid username and password, click login and verify the dashboard is displayed
+Open the login page, click login without entering credentials and verify validation messages appear
+Open the signup page, enter valid user details, submit the form and verify account is created successfully
+Enter a valid product name in the search bar, click search and verify relevant results are displayed
+'''

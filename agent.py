@@ -1,9 +1,6 @@
-<<<<<<< HEAD
+
 #agent program
 
-def run_agent(user_input: str) -> str:
-    return f"Echo from agent: {user_input}"
-=======
 from typing import TypedDict
 from langgraph.graph import StateGraph, END
 class AgentState(TypedDict):
@@ -24,4 +21,4 @@ graph.add_edge("respond", END)
 
 agent = graph.compile()
 
->>>>>>> e86365c4232a5c9468af5a1ef5cd343c6c71190d
+#run:python -m ai_testing_agent.testing
