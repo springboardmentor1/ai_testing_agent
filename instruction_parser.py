@@ -84,7 +84,7 @@ import re
 from google import genai
 from langgraph.graph import StateGraph, END
 client = genai.Client(
-    api_key="AIzaSyAllyh9u1zJbEejHYqUCRlF6sk2CH4A6dg"
+    api_key="AIzaXXXXXXXXXXXXXXXXXXX"
 )
 
 #list available models
