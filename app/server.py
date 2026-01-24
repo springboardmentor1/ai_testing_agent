@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from app.agents.llm_instruction_parser import llm_parser_agent
+from app.agents.baseline_agent import agent
 
 app = Flask(
     __name__,
@@ -12,13 +12,13 @@ app = Flask(
 def home():
     return app.send_static_file("index.html")
 
-# ---- LLM Parser API ----
+# ---- Parser API (rule + LLM combined) ----
 @app.route("/parse", methods=["POST"])
 def parse_instruction():
     data = request.get_json()
     instruction = data.get("instruction")
 
-    result = llm_parser_agent.invoke({
+    result = agent.invoke({
         "input": instruction
     })
 
