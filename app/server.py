@@ -1,16 +1,13 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
+from instruction_parser.parser import parse_instruction
 
-app = Flask(__name__, static_folder="../static")
+app = Flask(__name__)
 
-@app.route("/")
-def home():
-    return send_from_directory("../static", "index.html")
 
-@app.route("/submit", methods=["POST"])
-def submit():
-    data = request.json
-    instruction = data.get("instruction", "")
-    return jsonify({"response": f"Received: {instruction}"})
+@app.route("/parse", methods=["POST"])
+def parse():
+    data = request.get_json()
+    instruction = data.get("instruction")
 
-def create_app():
-    return app
+    result = parse_instruction(instruction)
+    return jsonify(result.dict())
