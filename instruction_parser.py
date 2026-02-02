@@ -4,7 +4,7 @@ import re
 from google import genai
 from langgraph.graph import StateGraph, END
 
-client = genai.Client(api_key="AIzaSyCv6jFHkB3twEvVnYkkOybrfOz3krt7zxU")
+client = genai.Client(api_key="")
 
 MODEL_NAME = "models/gemini-flash-latest"
 
