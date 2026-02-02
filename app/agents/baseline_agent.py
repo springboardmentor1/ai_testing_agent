@@ -1,55 +1,20 @@
+import asyncio
+import os
+import json
+import re
 from typing import TypedDict
-from langgraph.graph import StateGraph,END
+from dotenv import load_dotenv
+from langgraph.graph import StateGraph, END
 from langchain_groq import ChatGroq 
 from langchain_core.prompts import ChatPromptTemplate
-import json
-from dotenv import load_dotenv
-import os
+from playwright.async_api import async_playwright, expect
 
 load_dotenv()
 
 class AgentState(TypedDict):
-    input:str
-    parsed_command:dict
-    output:str
-
-def respond(state:AgentState)->AgentState:
-    return {
-        "input":state["input"],
-        "output":f"Echo: {state['input']}"
-    }
-
-def rule_based_parser(state: AgentState) -> AgentState:
-    text = state["input"].lower()
-    command = {"action": "unknown", "target": None, "value": None}
-
-    if "goto" in text or "navigate" in text:
-        command["action"] = "navigate"
-        # Extract URL 
-        command["target"] = text.split("to")[-1].strip()
-    
-    elif "click" in text:
-        command["action"] = "click"
-        command["target"] = text.replace("click", "").strip()
-        
-    elif "type" in text or "enter" in text:
-        command["action"] = "type"
-        # Example: "Type hello into search"
-        parts = text.split("into")
-        command["value"] = parts[0].replace("type", "").strip()
-        command["target"] = parts[1].strip() if len(parts) > 1 else None
-
-    return {**state, "parsed_command": command}
-
-
-import os
-import json
-from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate
-
-load_dotenv()
-
+    input: str
+    parsed_command: dict
+    output: str
 
 PARSER_SYSTEM_PROMPT = """
 You are a web testing assistant. Convert the user's natural language instruction 
@@ -58,12 +23,10 @@ into a JSON object with these exact keys:
 - "target": (the button name, input field, or URL)
 - "value": (the text to type, if any; otherwise null)
 
-Example Output:
-{{"action": "navigate", "target": "google.com", "value": null}}
+IMPORTANT: Output ONLY the raw JSON object. Do not include any conversational text.
 """
 
 def llm_parser(state: AgentState) -> AgentState:
-    
     llm = ChatGroq(
         model="llama-3.3-70b-versatile", 
         temperature=0,
@@ -76,45 +39,95 @@ def llm_parser(state: AgentState) -> AgentState:
     ])
     
     chain = prompt | llm
-    
-    # Process the user input through the Instruction Parser Module
     ai_response = chain.invoke({"user_input": state["input"]})
-    
-    # Parse the response into a structured command
-    parsed_json = json.loads(ai_response.content)
+    content = ai_response.content
+    try:
+        json_match = re.search(r"\{.*\}", content, re.DOTALL)
+        if json_match:
+            clean_json = json_match.group(0)
+            parsed_json = json.loads(clean_json)
+        else:
+            raise ValueError("No JSON found in response")
+    except Exception as e:
+        parsed_json = {"action": "error", "target": "parsing", "value": str(e)}
     
     return {**state, "parsed_command": parsed_json}
-def mock_code_generator(state: AgentState) -> AgentState:
-    command = state["parsed_command"]
-    action = command["action"]
-    target = command["target"]
-    
-    # In Milestone 3, this will be actual Playwright code
-    generated_code = f"# Playwright Script\nawait page.{action}('{target}')"
-    
-    return {**state, "output": f"CODE GENERATED:\n{generated_code}"}
 
-# # 1. Initialize Graph
-# graph = StateGraph(AgentState)
+def real_code_generator(state: AgentState) -> AgentState:
+    cmd = state["parsed_command"]
+    action = cmd.get("action")
+    target = cmd.get("target")
+    value = cmd.get("value")
 
-# # 2. Add Nodes
-# graph.add_node("parser", rule_based_parser)
-# graph.add_node("respond", respond)
+    if action == "navigate":
+        code = f"page.goto('{target}')"
+    elif action == "click":
+        code = f"page.get_by_text('{target}', exact=False).first.click()"
+    elif action == "type":
+        code = f"page.get_by_role('combobox').first.fill('{value}')"
+    elif action == "verify":
+        code = f"expect(page.get_by_text('{target}')).to_be_visible()"
+    else:
+        code = "print('Unsupported action')"
 
-# # 3. Define the Flow (Edges)
-# graph.set_entry_point("parser") # Start at the parser station
-# graph.add_edge("parser", "respond") # Then go to respond
-# graph.add_edge("respond", END) # Then finish
+    return {**state, "output": code}
 
-# agent = graph.compile()
 
+async def browser_executor(state: AgentState) -> AgentState:
+    cmd = state["parsed_command"]
+    if cmd["action"] == "error": return {**state, "output": f" Error: {cmd['target']}"}
+
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=False, slow_mo=1000)
+        page = await browser.new_page()
+        
+        try:
+            target_url = cmd["target"]
+            
+            if cmd["action"] == "navigate":
+                if not target_url.startswith("http"): target_url = f"https://{target_url}"
+                await page.goto(target_url, wait_until="load", timeout=15000)
+                report = f" Navigated to {target_url}"
+            
+            else:
+                await page.goto("https://www.youtube.com", wait_until="load")
+                try:
+                    consent_btn = page.get_by_role("button", name=re.compile("Accept|Agree", re.I))
+                    if await consent_btn.is_visible(timeout=2000):
+                        await consent_btn.click()
+                except:
+                    pass
+
+                if cmd["action"] == "click":
+                    await page.get_by_text(cmd["target"], exact=False).first.click(timeout=10000)
+                    report = f" Clicked '{cmd['target']}'"
+                
+                elif cmd["action"] == "type":
+                    search_box = page.get_by_role("combobox").or_(page.get_by_role("textarea")).first
+                    await search_box.fill(cmd["value"])
+                    await search_box.press("Enter")
+                    report = f" Typed '{cmd['value']}' and searched."
+                
+                elif cmd["action"] == "verify":
+                    await expect(page.get_by_text(cmd["target"]).first).to_be_visible(timeout=10000)
+                    report = f" Verified: '{cmd['target']}' is visible."
+
+        except Exception as e:
+            report = f" Execution Failed: {str(e)}"
+        finally:
+            await asyncio.sleep(2)
+            await browser.close()
+            
+    return {**state, "output": report}
 
 graph = StateGraph(AgentState)
-
 graph.add_node("parser", llm_parser)
-graph.add_node("generator", mock_code_generator)
+graph.add_node("generator", real_code_generator)
+graph.add_node("executor", browser_executor)
+
 graph.set_entry_point("parser")
 graph.add_edge("parser", "generator")
-graph.add_edge("generator", END)
+graph.add_edge("generator", "executor")
+graph.add_edge("executor", END)
 
 agent = graph.compile()
