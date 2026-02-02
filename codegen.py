@@ -10,14 +10,13 @@ def generate_action(step):
     elif action == "click":
         return f'page.click("{step["selector"]}")'
 
-    elif action == "assert_text":
-        return f'assert page.text_content("{step["selector"]}") == "{step["value"]}"'
-
     elif action == "assert_visible":
-        return f'assert page.is_visible("{step["selector"]}")'
-
-    elif action == "assert_url":
-        return f'assert page.url == "{step["value"]}"'
+        return (
+            f'page.wait_for_selector("{step["selector"]}", '
+            f'state="visible", timeout=5000)'
+        )
 
     else:
         raise ValueError(f"Unsupported action: {action}")
+
+

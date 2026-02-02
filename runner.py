@@ -1,19 +1,14 @@
-from playwright.sync_api import sync_playwright
-from codegen import generate_action
-from steps import steps
+from instruction_parser import agent
+from executor import execute_test
 
-def run_test():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, slow_mo=1200)
+test_case = input("Enter test case: ")
+parser_result = agent.invoke({"input": test_case})
+playwright_json = parser_result["output"]
 
-        page = browser.new_page()
+print("\nGenerated Playwright JSON:")
+print(playwright_json)
 
-        for step in steps:
-            code = generate_action(step)
-            exec(code)
+execute_test(playwright_json, headless=False)
 
-        browser.close()
-        print("TEST EXECUTED SUCCESSFULLY")
 
-if __name__ == "__main__":
-    run_test()
+

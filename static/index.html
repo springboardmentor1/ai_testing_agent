@@ -1,34 +1,64 @@
-<!--<!DOCTYPE html>
-<html>
-<head>
-    <title>Static Flask Page</title>
-</head>
-<body>
-    <h1>Hello 👋</h1>
-</body>
-</html>*/-->
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        #dashboard {
+            display: none;
+            color: green;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #error {
+            display: none;
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+
+    <script>
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // ✅ VALID CREDENTIALS
+            if (username === "admin" && password === "admin123") {
+                document.getElementById("dashboard").style.display = "block";
+                document.getElementById("error").style.display = "none";
+            } else {
+                document.getElementById("dashboard").style.display = "none";
+                document.getElementById("error").style.display = "block";
+            }
+        }
+    </script>
+</head>
+
 <body>
 
-<h2>Login</h2>
+    <h2>Login</h2>
 
-<input id="username" placeholder="Username">
-<input id="password" type="password" placeholder="Password">
-<button id="loginBtn">Login</button>
+    <label>Username:</label><br>
+    <input id="username" type="text" placeholder="Enter username"><br><br>
 
-<p id="error" style="display:none;color:red;">Invalid credentials</p>
+    <label>Password:</label><br>
+    <input id="password" type="password" placeholder="Enter password"><br><br>
 
-<script>
-document.getElementById("loginBtn").onclick = () => {
-  const u = username.value;
-  const p = password.value;
-  if (u !== "admin" || p !== "admin") {
-    error.style.display = "block";
-  }
-};
-</script>
+    <button id="loginBtn" onclick="login()">Login</button>
+
+    <p id="error">Invalid credentials</p>
+
+    <div id="dashboard">Welcome to Dashboard</div>
 
 </body>
 </html>
+
+
 
