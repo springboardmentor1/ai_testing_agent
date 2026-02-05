@@ -2,10 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Testing Agent</title>
+    <title>Login Page</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+
+        #main {
+           display: flex; 
+           justify-content: 
+           center; 
+           align-items: center; 
+           height: 100vh;
+        }
+
+        #login-box { 
+            border: 1px solid black; 
+            padding: 40px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+            border-radius: 8px; text-align: center; 
+        }
+
+         h2 {
+           text-align: center;
+        }
+
+        #dashboard {
+            display: none;
+            color: green;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #error {
+            display: none;
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Flask is running...</h1>
+
+    <div id="main">
+        <div id="login-box">
+            <h2>Login</h2>
+            <label>Username:</label><br>
+            <input id="username" type="text" placeholder="Enter username"><br><br>
+        
+            <label>Password:</label><br>
+            <input id="password" type="password" placeholder="Enter password"><br><br>
+        
+            <button id="loginBtn" onclick="login()">Login</button>
+        
+            <p id="error">Invalid credentials</p>
+        
+            <div id="dashboard">Login successful.</div>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // ✅ VALID CREDENTIALS
+            if (username === "psingh01" && password === "psingh123") {
+                document.getElementById("dashboard").style.display = "block";
+                document.getElementById("error").style.display = "none";
+            } else {
+                document.getElementById("dashboard").style.display = "none";
+                document.getElementById("error").style.display = "block";
+            }
+        }
+    </script>
+
 </body>
 </html>
+
+
