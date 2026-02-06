@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AI Testing Agent</title>
+</head>
+
+<body>
+    <h1>AI Web Tester</h1>
+
+    <input id="site" placeholder="Enter website (google, youtube, yahoo)">
+    <button onclick="login()">Login</button>
+
+    <script>
+        function login() {
+            const site = document.getElementById("site").value;
+            fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ site })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    window.location.href = data.url;
+                });
+        }
+    </script>
+</body>
+
+</html>
