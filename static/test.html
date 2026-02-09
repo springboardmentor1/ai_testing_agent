@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Page</title></head>
+<body>
+
+<h2>Login Test</h2>
+<input id="username" placeholder="Username"><br><br>
+<input id="password" type="password"><br><br>
+<button id="login" onclick="login()">Login</button>
+
+<p id="result"></p>
+
+<script>
+function login() {
+    if (username.value === "Sibani_3" && password.value === "sibani123") {
+        result.innerText = "Success";
+    } else {
+        result.innerText = "Failed";
+    }
+}
+</script>
+
+</body>
+</html>

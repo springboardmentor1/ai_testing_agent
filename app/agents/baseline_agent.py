@@ -18,33 +18,27 @@ def rule_parser(state: AgentState) -> AgentState:
     text = state["input"].lower()
     actions = []
 
-    if "open" in text and "google" in text:
-        actions.append({
-            "action": "open",
-            "target": "https://www.google.com",
-            "value": ""
-        })
+    # ---- Local Test Page ----
+    if "test page" in text:
+        actions.append({"action": "open", "target": "test", "value": ""})
+        actions.append({"action": "verify", "target": "login", "value": ""})
+        return {"input": state["input"], "actions": actions}
 
+    # ---- Known Websites ----
+    for site in ["google", "amazon", "flipkart"]:
+        if site in text:
+            actions.append({"action": "open", "target": site, "value": ""})
+            break
+
+    # ---- Search Intent ----
     if "search for" in text:
         query = text.split("search for")[-1].strip()
-        actions.append({
-            "action": "type",
-            "target": "input[name='q']",
-            "value": query
-        })
-        actions.append({
-            "action": "click",
-            "target": "input[name='btnK']",
-            "value": ""
-        })
+        actions.append({"action": "search", "target": "", "value": query})
 
-    return {
-        "input": state["input"],
-        "actions": actions
-    }
+    return {"input": state["input"], "actions": actions}
 
 # =========================
-# LLM-based Parser (LLaMA 3.3)
+# LLM-based Parser
 # =========================
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
@@ -56,21 +50,16 @@ prompt = PromptTemplate(
     template="""
 You are an AI test instruction parser.
 
-Convert the user instruction into structured browser actions.
+Convert the instruction into structured browser actions.
 
 Allowed actions:
-- open (url)
-- click (selector)
-- type (selector, value)
-- assert_text (selector, text)
+- open (site or url)
+- search (query)
+- click
+- type
+- verify
 
-Instruction:
-{instruction}
-
-Return ONLY valid JSON:
-[
-  {{ "action": "...", "target": "...", "value": "..." }}
-]
+Return ONLY valid JSON array.
 """
 )
 
@@ -90,10 +79,16 @@ def llm_parser(state: AgentState) -> AgentState:
 # Router (Rule vs LLM)
 # =========================
 def router(state: AgentState) -> AgentState:
-    # Simple heuristic
-    if len(state["input"].split()) > 3:
-        return llm_parser(state)
-    return rule_parser(state)
+    text = state["input"].lower()
+
+    # Known simple patterns → rule-based
+    known_keywords = ["google", "amazon", "flipkart", "test page", "search for"]
+
+    if any(k in text for k in known_keywords) and len(text.split()) <= 10:
+        return rule_parser(state)
+
+    # Complex / flexible instructions → LLM
+    return llm_parser(state)
 
 # =========================
 # LangGraph Workflow
