@@ -5,16 +5,22 @@ __pycache__/
 # Virtual environment
 venv/
 
-# Env files
-.env
-
-# macOS
-.DS_Store
 # Node
 node_modules/
 
 # Playwright
 test-results/
 
+# Env files
+.env
+
 # macOS
 .DS_Store
+
+
+
+
+
+
+
+
