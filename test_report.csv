@@ -1,0 +1,5 @@
+test_case,status,steps_executed,error,timestamp,execution_time_sec
+Open invalidsite123.com,FAIL,1,"Page.goto: net::ERR_NAME_NOT_RESOLVED at https://invalidsite123.com/
+Call log:
+  - navigating to ""https://invalidsite123.com/"", waiting until ""load""
+",2026-02-13 17:12:07,2.41

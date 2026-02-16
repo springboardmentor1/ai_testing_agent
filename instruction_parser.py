@@ -1,12 +1,21 @@
 from typing import TypedDict
 import json
 import re
+import os
+
+from dotenv import load_dotenv
 from google import genai
 from langgraph.graph import StateGraph, END
 
-client = genai.Client(api_key="")
+#Load API key from .env
+load_dotenv()
+
+client = genai.Client(
+    api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 MODEL_NAME = "models/gemini-flash-latest"
+
 
 class ParserState(TypedDict):
     input: str
@@ -14,7 +23,7 @@ class ParserState(TypedDict):
 
 
 SYSTEM_PROMPT = """
-YYou are an AI test automation engine.
+You are an AI test automation engine.
 
 Convert a natural language test case into EXECUTABLE Playwright JSON.
 
@@ -80,50 +89,10 @@ KNOWN APPLICATION CONTEXTS:
 ASSERTION RULES:
 - Successful login → assert_visible #dashboard
 - Failed login → assert_visible #error
-- Google page → assert_visible input[name='q']
+- Google page → navigation only (no assertions)
 - Amazon page → assert_visible #nav-logo-sprites
-
-EXAMPLES:
-
-Input:
-"Open google"
-
-Output:
-{
-  "steps": [
-    { "action": "goto", "url": "https://www.google.com" },
-    { "action": "assert_visible", "selector": "input[name='q']" }
-  ]
-}
-
-Input:
-"Open google and then open amazon.in"
-
-Output:
-{
-  "steps": [
-    { "action": "goto", "url": "https://www.google.com" },
-    { "action": "goto", "url": "https://www.amazon.in" },
-    { "action": "assert_visible", "selector": "#nav-logo-sprites" }
-  ]
-}
-
-Input:
-"Open the login page, enter valid username and password, click login and verify the dashboard is displayed"
-
-Output:
-{
-  "steps": [
-    { "action": "goto", "url": "http://localhost:5000" },
-    { "action": "fill", "selector": "#username", "value": "admin" },
-    { "action": "fill", "selector": "#password", "value": "admin123" },
-    { "action": "click", "selector": "#loginBtn" },
-    { "action": "assert_visible", "selector": "#dashboard" }
-  ]
-}
-
-
 """
+
 
 def parse_instruction(state: ParserState) -> ParserState:
     response = client.models.generate_content(
@@ -133,19 +102,29 @@ def parse_instruction(state: ParserState) -> ParserState:
     )
 
     text = response.text.strip()
+
+    #Remove markdown formatting if LLM adds it
     text = re.sub(r"^```(json)?\s*", "", text)
     text = re.sub(r"\s*```$", "", text)
 
-    parsed = json.loads(text)
+    # Extract JSON safely
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match:
+        raise ValueError(f"Invalid JSON generated: {text}")
+
+    parsed = json.loads(match.group())
 
     return {
         "input": state["input"],
         "output": parsed
     }
 
+
+#Build LangGraph workflow
 graph = StateGraph(ParserState)
 graph.add_node("parse_instruction", parse_instruction)
 graph.set_entry_point("parse_instruction")
 graph.add_edge("parse_instruction", END)
 
 agent = graph.compile()
+

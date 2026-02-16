@@ -1,0 +1,8 @@
+{
+    "test_case": "Open invalidsite123.com",
+    "status": "FAIL",
+    "steps_executed": 1,
+    "error": "Page.goto: net::ERR_NAME_NOT_RESOLVED at https://invalidsite123.com/\nCall log:\n  - navigating to \"https://invalidsite123.com/\", waiting until \"load\"\n",
+    "timestamp": "2026-02-13 17:12:07",
+    "execution_time_sec": 2.41
+}
