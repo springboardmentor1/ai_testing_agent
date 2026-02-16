@@ -1,4 +1,16 @@
+
 .env
-.venv/
+.vscode/
+
+
 __pycache__/
 *.pyc
+venv/
+env/
+.venv/
+
+
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+

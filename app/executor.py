@@ -1,23 +1,14 @@
-import types
+import traceback
 
-def execute_generated_code(code_str: str):
-    """
-    Compiles and executes the generated Python code string safely.
-    Returns the list of logs/results from the execution.
-    """
+def execute_python_code(code_str: str):
     try:
-        # Create a temporary module to hold the code
-        module_code = compile(code_str, "<string>", "exec")
-        module_context = types.ModuleType("dynamic_test_module")
+        module_context = {}
+        exec(code_str, module_context)
         
-        # Execute the code inside this new module context
-        exec(module_code, module_context.__dict__)
+        if "run_automation" not in module_context:
+            return [{"status": "error", "message": "Code did not define run_automation"}]
         
-        # Check if the function 'run_automation' exists and run it
-        if hasattr(module_context, "run_automation"):
-            return module_context.run_automation()
-        else:
-            return ["ERROR: Generated code missing 'run_automation' entry point."]
-            
+        return module_context["run_automation"]()
+
     except Exception as e:
-        return [f"CRITICAL EXECUTION ERROR: {str(e)}"]
+        return [{"status": "error", "message": f"Execution Crash: {str(e)}"}]

@@ -3,58 +3,77 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
-# Define the Strict Data Model for AI Output
+# --- Data Models ---
 class AutomationCommand(BaseModel):
-    action: str = Field(description="The action: 'goto', 'click', 'fill', 'press', or 'assert'")
-    params: Dict[str, Any] = Field(description="Parameters for the action (e.g., url, selector, value, key)")
-    description: str = Field(description="Human-readable description of what this step does")
+    action: str = Field(description="Action: 'goto', 'click', 'fill', 'press', or 'assert'")
+    params: Dict[str, Any] = Field(description="Parameters (url, selector, value, key)")
+    description: str = Field(description="Readable description of step")
 
 class AutomationPlan(BaseModel):
-    steps: List[AutomationCommand] = Field(description="List of sequential automation steps")
+    steps: List[AutomationCommand] = Field(description="List of automation steps")
 
-# Initialize the LLM (Llama 3.3)
+# --- AI Setup ---
 llm = ChatGroq(
     temperature=0,
     model_name="llama-3.3-70b-versatile",
     api_key=os.environ.get("GROQ_API_KEY")
 )
 
-# Initialize the Parser
 parser = JsonOutputParser(pydantic_object=AutomationPlan)
 
 def parse_instruction(instruction: str):
-    """
-    Converts natural language into a list of structured Playwright commands.
-    """
-    
-    # SYSTEM PROMPT 
+    # --- SMART SYSTEM PROMPT ---
     system_prompt = """
-    You are an expert QA Automation Engineer.
-    Your job is to convert natural language test instructions into a list of structured steps.
+    You are an expert QA Automation Engineer. Convert instructions into structured steps.
     
-    ### RULES:
-    1. **Navigation:** If user says "Open [URL]", output action: "goto".
-    2. **Typing:** If user says "Type [text] into [field]", output action: "fill".
-       - **Selector Strategy:** Use your knowledge of standard web elements.
-       - Common Search IDs: "#searchInput", "#search", "[name='q']", "[name='search']".
-       - Common Login IDs: "#username", "#email", "#password".
-    3. **Clicking:** If user says "Click [element]", output action: "click".
-       - **Selector Strategy:** ALWAYS prioritize IDs first.
-       - Example: "Click Submit" -> selector: "#submit" (Preferred) or "button[type='submit']"
-       - Example: "Click Login" -> selector: "#login-btn" or "#login"
-    4. **Keys:** If user says "Hit Enter", output action: "press".
-    5. **Assertions:** If user says "Verify title is [text]" or "Check if text exists", output action: "assert".
-       - For titles: params = {{"type": "title", "value": "Expected Title"}}
-       - For text: params = {{"type": "text", "selector": "body", "value": "Expected Text"}}
+    ### SITE-SPECIFIC RULES (CRITICAL):
     
-    ### OUTPUT FORMAT:
-    Return ONLY a JSON object with a "steps" key containing the list.
+    1. **IF AMAZON:**
+       - Search Input: "#twotabsearchtextbox"
+       - Search Button: "#nav-search-submit-button"
+       
+    2. **IF YOUTUBE:**
+       - Search Input: "input[name='search_query']"
+       - First Video: "ytd-video-renderer:nth-of-type(1) #video-title"
+       
+    3. **IF GOOGLE:**
+       - Search Input: "[name='q']"
+       - First Result: "div.g:nth-of-type(1) a h3"
+       
+    4. **IF WIKIPEDIA:**
+       - Search Input: "input#searchInput"
+       - Search Button: "button.pure-button"
+    
+    ### GENERAL ACTIONS:
+    - **Navigation:** "Open [URL]" -> action: "goto".
+    - **Typing:** "Type [text]" -> action: "fill".
+    - **Clicking:** "Click [element]" -> action: "click".
+    - **Keys:** "Hit Enter" -> action: "press", params: {{"key": "Enter"}}.
+    
+    ### EXAMPLE (Amazon):
+    Input: "Navigate to amazon.in and search for iphone"
+    Output:
+    [
+      {{
+        "action": "goto", 
+        "params": {{ "url": "https://www.amazon.in" }}
+      }},
+      {{
+        "action": "fill", 
+        "params": {{ "selector": "#twotabsearchtextbox", "value": "iphone" }}, 
+        "description": "Type 'iphone' into Amazon search"
+      }},
+      {{
+        "action": "click", 
+        "params": {{ "selector": "#nav-search-submit-button" }}, 
+        "description": "Click Search"
+      }}
+    ]
     """
 
     prompt = ChatPromptTemplate.from_messages([
@@ -62,14 +81,14 @@ def parse_instruction(instruction: str):
         ("human", "{query}\n\n{format_instructions}")
     ])
 
-    chain = prompt | llm | parser
+    print(f"🧠 AI: Analyzing Instruction: '{instruction}'...")
 
     try:
-        response = chain.invoke({
+        response = (prompt | llm | parser).invoke({
             "query": instruction,
             "format_instructions": parser.get_format_instructions()
         })
         return response.get("steps", [])
     except Exception as e:
-        print(f"Error in Parser: {e}")
+        print(f"❌ Parser Error: {e}")
         return []
