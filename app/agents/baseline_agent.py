@@ -10,13 +10,18 @@ from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from playwright.async_api import async_playwright, expect
 from typing import List
+from app.agents.reporter import TestReporter
 
 load_dotenv()
 
-class AgentState(TypedDict):
+class AgentState(TypedDict, total=False):
     input: str
     parsed_command: List[dict]
+    step_results: List[dict]
     output: str
+    report_path: str
+    status: str
+
 
 PARSER_SYSTEM_PROMPT = """
 You are a web testing assistant. Convert the user's natural language instruction 
@@ -41,11 +46,34 @@ def llm_parser(state: AgentState) -> AgentState:
     content = ai_response.content
     try:
         json_match = re.search(r"\[.*\]", content, re.DOTALL)
-        parsed_json = json.loads(json_match.group(0)) if json_match else [{"action": "error"}]
+        parsed_json = json.loads(json_match.group(0)) if json_match else []
     except Exception as e:
-        parsed_json = [{"action": "error", "target": "parsing", "value": str(e)}]
-    
+        parsed_json = []
+
+    # --- Generic fallback ---
+    if not parsed_json:
+        user_input = state["input"].lower()
+        steps = []
+
+        # Always start with a navigate step
+        steps.append({
+            "action": "navigate",
+            "target": user_input,   # keep it generic, executor will resolve
+            "value": None
+        })
+
+        # If instruction contains "search for X"
+        match = re.search(r"search for (.+)", user_input)
+        if match:
+            query = match.group(1).strip()
+            steps.append({"action": "type", "target": "search box", "value": query})
+            steps.append({"action": "click", "target": "search", "value": None})
+
+        parsed_json = steps
+
     return {**state, "parsed_command": parsed_json}
+
+
 
 def real_code_generator(state: AgentState) -> AgentState:
     return state
@@ -54,6 +82,11 @@ async def browser_executor(state: AgentState) -> AgentState:
     commands = state["parsed_command"]
     raw_input = state["input"].lower()
     report_lines = []
+    step_results = []
+
+    reporter = TestReporter()
+    screenshots = []
+    errors = []
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=False, slow_mo=1000)
@@ -71,31 +104,63 @@ async def browser_executor(state: AgentState) -> AgentState:
 
                 if action == "error":
                     report_lines.append(f"❌ Parsing error: {target}")
+                    step_results.append({"step": f"Parsing error: {target}", "status": "fail"})
                     continue
 
                 if action == "navigate":
                     target_url = static_uri if "index.html" in target.lower() else (
                         target if target.startswith("http") else f"https://{target}"
                     )
-                    await page.goto(target_url, wait_until="load")
-                    report_lines.append(f"✅ Navigated to {target_url}")
+                    try:
+                        response = await page.goto(target_url, wait_until="load", timeout=10000)
+
+                        if not response:
+                            msg = f"❌ Navigation failed: No response from {target_url}"
+                            errors.append(msg)
+                            report_lines.append(msg)
+                            step_results.append({"step": f"Navigate to {target_url}", "status": "fail", "error": msg})
+                            continue
+
+                        if not response.ok:
+                            msg = f"❌ Navigation failed: HTTP {response.status} from {target_url}"
+                            errors.append(msg)
+                            report_lines.append(msg)
+                            step_results.append({"step": f"Navigate to {target_url}", "status": "fail", "error": msg})
+                            continue
+
+                        report_lines.append(f"✅ Navigated to {page.url} (HTTP {response.status})")
+                        step_results.append({"step": f"Navigate to {target_url}", "status": "pass"})
+
+                    except Exception as e:
+                        msg = f"❌ Navigation error: {str(e)}"
+                        errors.append(str(e))
+                        report_lines.append(msg)
+                        step_results.append({"step": f"Navigate to {target_url}", "status": "fail", "error": str(e)})
+                        continue
 
                 elif action == "click":
-                    if page.url == "about:blank":
-                        await page.goto(static_uri)
-
                     clean_target = re.sub(r'button|link', '', target, flags=re.I).strip()
-                    button = page.locator(f"button:has-text('{clean_target}')").first
-                    await button.click(timeout=5000)
-                    report_lines.append(f"✅ Clicked on '{clean_target}'")
+                    locator = (
+                        page.get_by_role("button", name=clean_target).or_(
+                            page.get_by_text(clean_target, exact=False)
+                        ).first
+                    )
+                    try:
+                        if await locator.count() > 0:
+                            await locator.click(timeout=5000)
+                            report_lines.append(f"✅ Clicked on '{clean_target}'")
+                            step_results.append({"step": f"Click {clean_target}", "status": "pass"})
+                        else:
+                            msg = f"⚠️ No clickable element found for '{clean_target}'"
+                            report_lines.append(msg)
+                            step_results.append({"step": f"Click {clean_target}", "status": "fail", "error": msg})
+                    except Exception as e:
+                        msg = f"❌ Click failed: {str(e)}"
+                        errors.append(str(e))
+                        report_lines.append(msg)
+                        step_results.append({"step": f"Click {clean_target}", "status": "fail", "error": str(e)})
 
                 elif action == "type":
-                    if page.url == "about:blank":
-                        if "search" in raw_input or "youtube" in raw_input:
-                            await page.goto("https://www.youtube.com")
-                        else:
-                            await page.goto(static_uri)
-
                     normalized_target = (
                         target.lower()
                         .replace("enter ", "")
@@ -118,36 +183,95 @@ async def browser_executor(state: AgentState) -> AgentState:
                             .first
                         )
 
-                    await field.fill(value)
-                    if "search" in raw_input:
-                        await page.keyboard.press("Enter")
-
-                    report_lines.append(f"✅ Typed '{value}' into '{target}'")
+                    try:
+                        if await field.count() > 0:
+                            await field.fill(value)
+                            if "search" in raw_input:
+                                await page.keyboard.press("Enter")
+                            report_lines.append(f"✅ Typed '{value}' into '{target}'")
+                            step_results.append({"step": f"Type into {target}", "status": "pass"})
+                        else:
+                            msg = f"⚠️ No input field found for '{target}'"
+                            report_lines.append(msg)
+                            step_results.append({"step": f"Type into {target}", "status": "fail", "error": msg})
+                    except Exception as e:
+                        msg = f"❌ Typing failed: {str(e)}"
+                        errors.append(str(e))
+                        report_lines.append(msg)
+                        step_results.append({"step": f"Type into {target}", "status": "fail", "error": str(e)})
 
                 elif action == "verify":
-                    if page.url == "about:blank":
-                        await page.goto(static_uri)
-
-                    await expect(page.get_by_text(target, exact=False).first).to_be_visible(timeout=5000)
-                    report_lines.append(f"✅ Verified visibility of '{target}'")
+                    try:
+                        await expect(page.get_by_text(target, exact=False).first).to_be_visible(timeout=5000)
+                        report_lines.append(f"✅ Verified visibility of '{target}'")
+                        step_results.append({"step": f"Verify {target}", "status": "pass"})
+                    except Exception as e:
+                        msg = f"⚠️ Could not verify '{target}': {str(e)}"
+                        errors.append(str(e))
+                        report_lines.append(msg)
+                        step_results.append({"step": f"Verify {target}", "status": "fail", "error": str(e)})
 
                 else:
-                    report_lines.append(f"❌ Unknown action: {action}")
+                    msg = f"❌ Unknown action: {action}"
+                    report_lines.append(msg)
+                    step_results.append({"step": f"Unknown action {action}", "status": "fail", "error": msg})
 
+               # ✅ Screenshot after every step 
+                try: 
+                    screenshot_bytes = await page.screenshot(full_page=True) 
+                    screenshots.append(reporter.save_screenshot(screenshot_bytes, f"step_{len(step_results)}")) 
+                except Exception as e: 
+                    report_lines.append(f"⚠️ Screenshot capture failed: {str(e)}")
+ 
         except Exception as e:
+            errors.append(str(e))
             try:
-                await page.screenshot(path="error_screenshot.png")
-                report_lines.append(f"❌ Execution Failed: {str(e)} (screenshot saved)")
+                screenshot_bytes = await page.screenshot()
+                path = reporter.save_screenshot(screenshot_bytes)
+                screenshots.append(path)
             except:
-                report_lines.append(f"❌ Execution Failed: {str(e)}")
+                pass
+            report_lines.append(f"❌ Execution Failed: {str(e)}")
+            step_results.append({"step": "Execution", "status": "fail", "error": str(e)})
+
         finally:
             await asyncio.sleep(2)
             await browser.close()
+    
+    # Determine final status
+    final_status = (
+        "passed"
+        if step_results and all(s.get("status") == "pass" for s in step_results)
+        else "failed"
+    )
 
-    return {**state, "output": "\n".join(report_lines)}
+    # Generate HTML report
+    report_path = reporter.generate_html_report(
+        "Milestone_4_Test",
+        [str(c) for c in commands],
+        "\n".join(report_lines),
+        errors,
+        screenshots,
+        final_status=final_status
+    )
+
+    final_output = "\n".join(report_lines) + f"\n📄 HTML Report Generated: {report_path}"
+    final_status = (
+        "passed"
+        if step_results and all(s.get("status") == "pass" for s in step_results)
+        else "failed"
+    )
+
+    return {
+    **state,   # keep original state first
+    "parsed_command": commands,
+    "step_results": step_results,
+    "output": final_output,
+    "report_path": report_path,
+    "status": final_status
+  }
 
 
-   
 
 graph = StateGraph(AgentState)
 graph.add_node("parser", llm_parser)
