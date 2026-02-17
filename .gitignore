@@ -1,38 +1,12 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-__pycache__/
-.venv/
-.env
-=======
-# Python
-__pycache__/
-*.pyc
-
-# Virtual environment
 venv/
-
-# Node
-node_modules/
-
-# Playwright
-test-results/
-
-# Env files
-.env
-
-# macOS
-.DS_Store
-
-
-
-
-
-
-
-
->>>>>>> milestone3-fixed
-=======
 __pycache__/
-.venv/
-.env
->>>>>>> 87e781a583f47f449e7543669da1200af4a3924d
+logs/
+screenshots/
+reports/
+
+
+
+
+
+
+
