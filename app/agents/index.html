@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Agent Test Page</title>
+</head>
+
+<body>
+    <h1>Welcome to the Static Test</h1>
+    <button id="login-btn">Login</button>
+    <input type="text" id="username" placeholder="Enter Username">
+    <p id="message" style="display:none;">Success!</p>
+    <script>
+        document.getElementById('login-btn').onclick = () => {
+            document.getElementById('message').style.display = 'block';
+        };
+    </script>
+</body>
+
+</html>

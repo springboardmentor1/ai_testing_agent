@@ -1,0 +1,16 @@
+Timestamp,Prompt,Test Type,Status,Details
+2026-02-17 11:30:39.002478,search laptop,Open Amazon,PASS,Amazon opened successfully.
+2026-02-17 11:31:18.733802,search TV,Open Amazon,PASS,Amazon opened successfully.
+2026-02-17 11:43:38.111194,Amazon,FAIL,0.01
+2026-02-17 11:43:42.345520,Google,FAIL,0.01
+2026-02-17 11:43:45.771038,YouTube,FAIL,0.01
+2026-02-17 11:45:12.838478,Go to youtube and search cat,Open YouTube,PASS,YouTube opened successfully.
+2026-02-17 12:42:20.668561,cats,Open Google,PASS,Google search executed for: cats
+2026-02-17 12:42:50.631423,search TV,Open Google,PASS,Google search executed for: search TV
+2026-02-17 12:43:24.199195,search TV,Open Amazon,PASS,Amazon search executed for: search TV
+2026-02-17 12:43:50.854631,search cats,Open YouTube,PASS,YouTube search executed for: search cats
+TC_20260217125200,2026-02-17 12:52:17.469604, cats,Open Google,FAIL,Validation Failed: Title does not match search keyword
+TC_20260217125234,2026-02-17 12:52:43.186527, TV,Open Amazon,FAIL,Validation Failed: Title does not match search keyword
+TC_20260217125824,2026-02-17 12:58:37.793556,cats,Open Google,PASS,Google search executed successfully
+TC_20260217125907,2026-02-17 12:59:23.977604,laptop,Open Amazon,PASS,Amazon search executed successfully
+TC_20260217125938,2026-02-17 12:59:55.098437,laptop,Open YouTube,PASS,YouTube search executed successfully
