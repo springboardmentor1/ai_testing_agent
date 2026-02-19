@@ -87,6 +87,7 @@ if st.session_state.dark_mode:
         unsafe_allow_html=True
     )
 
+
 # ================= TEST EXECUTION =================
 if section == "Test Execution":
 
@@ -281,6 +282,7 @@ elif section == "Analytics":
 
 
 # ================= LOGS =================
+# ================= LOGS =================
 elif section == "Logs":
 
     st.title("Execution Logs & Debug Center")
@@ -291,29 +293,13 @@ elif section == "Logs":
 
         st.subheader("Select Test")
 
-        col1, col2 = st.columns(2)
+        # Single dropdown (latest first)
+        selected_id = st.selectbox(
+            "Select Test ID",
+            sorted(df["ID"].tolist(), reverse=True)
+        )
 
-        # Dropdown selection (latest first)
-        with col1:
-            selected_id = st.selectbox(
-                "Select Test ID",
-                sorted(df["ID"].tolist(), reverse=True)
-            )
-
-        # Search by ID
-        with col2:
-            search_id = st.number_input(
-                "Search Test ID",
-                min_value=1,
-                max_value=int(df["ID"].max()),
-                step=1
-            )
-
-        # Decide which ID to use
-        if search_id != 1:
-            use_id = search_id
-        else:
-            use_id = selected_id
+        use_id = selected_id
 
         test_data = df[df["ID"] == use_id]
 
@@ -374,19 +360,15 @@ elif section == "Logs":
                 if log == "":
                     continue
 
-                # Page loaded detection
                 if "PAGE TITLE" in log:
                     st.success(f"PAGE EVENT → {log}")
 
-                # Verification result
                 elif "VERIFY RESULT" in log:
                     st.info(f"VERIFICATION → {log}")
 
-                # Browser waiting
                 elif "Waiting" in log:
                     st.warning(f"BROWSER WAIT → {log}")
 
-                # User action detection
                 elif "search" in log.lower() or "open" in log.lower():
                     st.write(f"ACTION → {log}")
 
