@@ -1,13 +1,72 @@
-# ai_testing_agent
-Milestone 1: Project Initialization and Baseline Agent Setup
 
-This project implements the foundation for an AI-based system that will automatically test websites using natural language instructions.
-Milestone 1 focuses on environment setup, project structure, and a baseline LangGraph agent.
+AI Agent to Test Websites Automatically Using Natural Language
 
-Features (Milestone 1)
-•	Set up Python environment and install dependencies (LangGraph, Playwright, Flask). 
-•	Define project structure and initialize Flask server for static HTML test page. 
-•	Implement baseline LangGraph agent configuration for handling user inputs. 
+This project is an AI-powered web testing platform that allows users to execute website tests using simple natural language instructions.
+
+Instead of writing automation scripts manually, the system converts instructions into automated browser actions using AI agents and Playwright.
+
+This project was developed as part of the Infosys Springboard Internship 6.0.
+
+Project Overview
+
+The system understands instructions such as:
+
+Open google and search for laptops
+
+The platform automatically:
+
+Parses the instruction using an AI agent
+
+Converts it into structured test actions
+
+Generates a Playwright automation script
+
+Executes the test in a real browser
+
+Displays results, logs, and analytics in a dashboard
+
+Features
+
+Natural Language Test Execution
+Rule-Based + LLM-Based Instruction Parser
+LangGraph Workflow Integration
+Automatic Playwright Script Generation
+Real Browser Automation
+Local Login Test Validation
+Execution Logs and Debug Center
+Test Reports Dashboard
+Analytics Visualization
+Failure Analysis System
+Interactive Streamlit UI
+
+Project Architecture
+
+User Instruction
+↓
+AI Agent (LangGraph Router)
+↓
+Structured Actions
+↓
+Playwright Script Generator
+↓
+Automation Execution
+↓
+Logs, Reports, and Analytics
+
+Project Structure
+app
+ ├── agents
+ │   ├── baseline_agent.py
+ │   ├── playwright_generator.py
+ │   ├── playwright_executor.py
+ │   └── report_generator.py
+ │
+ ├── server.py
+ |──static
+ │   └── test.html
+ |──streamlit_app.py
+ |──history.csv
+
 
 Technologies Used
 Python 3.x
@@ -15,35 +74,70 @@ Flask – Web server
 LangGraph – Agent workflow orchestration
 Playwright – Installed for future automation
 
-Installation
-pip install flask
-pip install langgraph
-pip install playwright
+
+
+Technologies Used
+Python 3.x
+Flask – Web server
+LangGraph – Agent workflow orchestration
+Playwright – Installed for future automation
+Groq LLaMA Model
+Streamlit
+Pandas
+Plotly
+
+Installation:
+
+Install dependencies
+pip install -r requirements.txt
+
+
+Install Playwright browsers
 playwright install
 
-Project Structure
-AI-Agent-Testing/
-│
-├── app/
-│   ├── agents/
-│   │   └── baseline_agent.py
-│   ├── server.py
-│
-├── static/
-│   └── index.html
-│
-├── run.py
-├── testing.py
+Running the Application:
+Run the Streamlit Dashboard
+streamlit run streamlit_app.py
 
-How to Run
-Start Flask Server
-python run.py
-Open: http://127.0.0.1:5000
 
-Test LangGraph Agent
-python testing.py
+(Optional) Run the Flask API
+python app/server.py
 
-Current Status:
-✔ Flask server running
-✔ Baseline agent working
-✔ Project ready for next milestones
+
+Example Test Instructions:
+
+Open google and search for laptops
+
+Open amazon and search for shoes
+
+Open flipkart and search for mobiles
+
+Open test page and verify login success
+
+Local Test Page
+
+A local login page is included to validate automation testing.
+
+Dashboard Modules
+
+Test Execution
+Runs automation tests using natural language
+
+Test Reports
+Stores and displays test history
+
+Analytics Dashboard
+Shows test statistics and results
+
+Execution Logs
+Displays detailed execution logs and debugging information
+
+Future Improvements:
+Parallel Test Execution
+AI-generated Test Cases
+Screenshot Validation
+Cloud-Based Test Execution
+Advanced Failure Detection
+
+Author
+Sibani Sri Perni
