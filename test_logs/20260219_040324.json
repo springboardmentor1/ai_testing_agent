@@ -1,0 +1,44 @@
+{
+  "test_id": "20260219_040324",
+  "timestamp": "2026-02-19T04:03:26.809089",
+  "instruction": "open browser go to https://www.youtube.com\n                search dooriyan dooron song\n                wait 3000\n                click first video",
+  "parsed_steps": [
+    {
+      "action": "OPEN_BROWSER",
+      "url": "https://www.youtube.com"
+    },
+    {
+      "action": "SEARCH",
+      "query": "dooriyan dooron song"
+    },
+    {
+      "action": "WAIT",
+      "duration": 3000
+    },
+    {
+      "action": "CLICK",
+      "selector": "first video",
+      "description": "first video"
+    }
+  ],
+  "browser_state": {
+    "browser_open": true,
+    "current_url": "https://www.youtube.com",
+    "logged_in": false
+  },
+  "generated_code": "\"\"\"\nAuto-generated Playwright test with adaptive selectors\nBrowser: VISIBLE MODE for demonstration\n\"\"\"\n\nfrom playwright.sync_api import sync_playwright, expect, TimeoutError as PWTimeoutError\nimport sys\nimport time\n\n\ndef find_element_adaptive(page, selectors, element_name=\"element\"):\n    \"\"\"Try multiple selectors until one works\"\"\"\n    for selector in selectors:\n        try:\n            elem = page.locator(selector).first\n            elem.wait_for(state=\"visible\", timeout=5000)\n            print(f\"  ✅ Found {element_name} using: {selector}\")\n            return elem\n        except:\n            continue\n    raise Exception(f\"Could not find {element_name} with any selector\")\n\n\ndef handle_cookie_consent(page):\n    \"\"\"Handle common cookie consent popups\"\"\"\n    consent_selectors = [\n        \"button:has-text(\\\"Accept all\\\")\",\n        \"button:has-text(\\\"Accept\\\")\",\n        \"button:has-text(\\\"I agree\\\")\",\n        \"[id*=\\\"accept\\\"]\",\n        \"[class*=\\\"accept\\\"]\"\n    ]\n    for selector in consent_selectors:\n        try:\n            page.locator(selector).click(timeout=3000)\n            print(\"  🍪 Accepted cookies\")\n            return True\n        except:\n            continue\n    return False\n\n\ndef run_test():\n    \"\"\"Execute the test with error handling\"\"\"\n    print(\"🎭 Starting test execution in VISIBLE MODE...\")\n    \n    with sync_playwright() as p:\n        # Launch VISIBLE browser with slow motion\n        browser = p.chromium.launch(\n            headless=False,  # Visible for demo\n            slow_mo=900       # Slow motion effect\n        )\n        context = browser.new_context(\n            viewport={\"width\": 1280, \"height\": 720},\n            user_agent=\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36\"\n        )\n        page = context.new_page()\n        \n        try:\n            print(\"\\n➡️  Step 1: OPEN_BROWSER\")\n            try:\n                print(\"  🌐 Opening https://www.youtube.com...\")\n                page.goto(\"https://www.youtube.com\", wait_until=\"domcontentloaded\", timeout=30000)\n                page.wait_for_load_state(\"domcontentloaded\")\n                time.sleep(2)  # Let page stabilize\n                \n                # Handle cookie consent\n                handle_cookie_consent(page)\n                \n                print(\"  ✅ Page loaded\")\n            except Exception as step_error:\n                print(f\"  ⚠️  Step 1 error: {step_error}\")\n                page.screenshot(path=\"screenshots/error_step_{i}.png\")\n                raise\n            \n            print(\"\\n➡️  Step 2: SEARCH\")\n            try:\n                print(\"  🔍 Searching for: dooriyan dooron song\")\n                \n                # Click somewhere to activate page\n                page.mouse.click(300, 300)\n                time.sleep(1)\n                \n                # Detect site and use appropriate search\n                current_url = page.url.lower()\n                \n                if \"google.\" in current_url:\n                    print(\"  🌍 Google search detected\")\n                    search_selectors = [\n                        \"textarea[name=\\\"q\\\"]\",\n                        \"input[name=\\\"q\\\"]\",\n                        \"input[type=\\\"search\\\"]\"\n                    ]\n                    search_box = find_element_adaptive(page, search_selectors, \"Google search box\")\n                    search_box.fill(\"dooriyan dooron song\")\n                    page.keyboard.press(\"Enter\")\n                \n                elif \"youtube.com\" in current_url:\n                    print(\"  📺 YouTube search detected\")\n                    page.wait_for_selector(\"input[name=\\\"search_query\\\"]\", timeout=30000)\n                    page.click(\"input[name=\\\"search_query\\\"]\")\n                    page.fill(\"input[name=\\\"search_query\\\"]\", \"dooriyan dooron song\")\n                    page.keyboard.press(\"Enter\")\n                \n                elif \"amazon.\" in current_url:\n                    print(\"  🛒 Amazon search detected\")\n                    amazon_selectors = [\n                        \"#twotabsearchtextbox\",\n                        \"input[type=\\\"text\\\"][name=\\\"field-keywords\\\"]\"\n                    ]\n                    search_box = find_element_adaptive(page, amazon_selectors, \"Amazon search\")\n                    search_box.fill(\"dooriyan dooron song\")\n                    page.keyboard.press(\"Enter\")\n                \n                else:\n                    print(\"  ⚠️  Generic search - trying common selectors\")\n                    generic_selectors = [\n                        \"input[type=\\\"search\\\"]\",\n                        \"input[name*=\\\"search\\\"]\",\n                        \"input[placeholder*=\\\"Search\\\"]\",\n                        \"[data-testid*=\\\"search\\\"]\"\n                    ]\n                    search_box = find_element_adaptive(page, generic_selectors, \"search box\")\n                    search_box.fill(\"dooriyan dooron song\")\n                    page.keyboard.press(\"Enter\")\n                \n                page.wait_for_load_state(\"networkidle\", timeout=15000)\n                time.sleep(3)  # Let results load\n                print(\"  ✅ Search completed\")\n            except Exception as step_error:\n                print(f\"  ⚠️  Step 2 error: {step_error}\")\n                page.screenshot(path=\"screenshots/error_step_{i}.png\")\n                raise\n            \n            print(\"\\n➡️  Step 3: WAIT\")\n            try:\n                print(\"  ⏱️  Waiting 3000ms\")\n                page.wait_for_timeout(3000)\n            except Exception as step_error:\n                print(f\"  ⚠️  Step 3 error: {step_error}\")\n                page.screenshot(path=\"screenshots/error_step_{i}.png\")\n                raise\n            \n            print(\"\\n➡️  Step 4: CLICK\")\n            try:\n                print(\"  👆 Clicking: first video\")\n                page.locator(\"first video\").wait_for(state=\"visible\", timeout=10000)\n                page.locator(\"first video\").click()\n                time.sleep(2)\n                print(\"  ✅ Clicked\")\n            except Exception as step_error:\n                print(f\"  ⚠️  Step 4 error: {step_error}\")\n                page.screenshot(path=\"screenshots/error_step_{i}.png\")\n                raise\n            \n            print(\"\\n✅ All steps PASSED!\")\n            print(\"🛑 Browser stays open for 20 seconds for inspection\")\n            time.sleep(20)\n            browser.close()\n            return 0\n            \n        except AssertionError as e:\n            print(f\"\\n❌ Assertion failed: {e}\")\n            page.screenshot(path=\"screenshots/assertion_failed.png\")\n            time.sleep(20)\n            browser.close()\n            return 1\n            \n        except PWTimeoutError as e:\n            print(f\"\\n⏱️  Timeout: {e}\")\n            page.screenshot(path=\"screenshots/timeout_error.png\")\n            time.sleep(20)\n            browser.close()\n            return 1\n            \n        except Exception as e:\n            print(f\"\\n❌ Test FAILED: {e}\")\n            page.screenshot(path=\"screenshots/test_error.png\")\n            time.sleep(20)\n            browser.close()\n            return 1\n\n\nif __name__ == \"__main__\":\n    exit_code = run_test()\n    sys.exit(exit_code)\n",
+  "code_file_path": "app/generated_tests\\test_20260219_040058.py",
+  "execution": {
+    "status": "failed",
+    "passed": false,
+    "duration_seconds": 0.0,
+    "output": "Live output shown in terminal (visible mode)",
+    "errors": "",
+    "return_code": 1
+  },
+  "metadata": {
+    "steps_count": 4,
+    "login_checked": false,
+    "screenshots_taken": 0
+  }
+}

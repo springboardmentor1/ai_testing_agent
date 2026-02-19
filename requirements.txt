@@ -1,6 +1,25 @@
-Flask==3.0.0
+# ==================== CORE ====================
 langchain==0.1.0
 langgraph==0.0.20
-ollama==0.1.6
 python-dotenv==1.0.0
 playwright==1.48.0
+
+# ==================== LLM PROVIDERS ====================
+# Option 1: Groq (Fast, Cloud-based) - RECOMMENDED
+groq==0.9.0
+
+# Option 2: Ollama (Local, Free)
+ollama==0.1.6
+
+# ==================== UI ====================
+streamlit==1.32.0
+plotly==5.18.0
+
+# ==================== DATA HANDLING ====================
+pandas==2.2.0
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+
+# ==================== UTILITIES ====================
+requests==2.31.0
+Pillow==10.2.0

@@ -1,0 +1,44 @@
+test_id,timestamp,instruction,status,passed,duration_seconds,steps_count,browser_opened,url_visited,login_checked,login_status,screenshots_taken,errors,code_file_path,log_file_path
+20260218_234603,2026-02-18 23:46:03,open browser search for python tutorial,passed,True,0,2,True,https://google.com,False,,0,,app/generated_tests\test_20260218_234457.py,test_logs/20260218_234603.json
+20260218_234928,2026-02-18 23:49:28,go to instagram check if logged in,passed,True,0,2,True,https://instagram.com,True,Not Logged In,0,,app/generated_tests\test_20260218_234831.py,test_logs/20260218_234928.json
+20260219_001358,2026-02-19 00:13:58,"open browser go to http://127.0.0.1:5500/login.html
+                type admin into #username
+                type admin123 into #password
+                click #loginBtn",failed,False,0,4,True,http://127.0.0.1:5500/login.html,False,,0,,app/generated_tests\test_20260219_001301.py,test_logs/20260219_001358.json
+20260219_001800,2026-02-19 00:18:00,"open browser go to http://127.0.0.1:5500/login.html
+                type admin into #username
+                type admin123 into #password
+                click #loginBtn",failed,False,0,4,True,http://127.0.0.1:5500/login.html,False,,0,,app/generated_tests\test_20260219_001550.py,test_logs/20260219_001800.json
+20260219_001815,2026-02-19 00:18:15,"open browser go to http://127.0.0.1:5500/ai-web-test-agent/login.html
+                type admin into #username
+                type admin123 into #password
+                click #loginBtn",passed,True,0,4,True,http://127.0.0.1:5500/ai-web-test-agent/login.html,False,,0,,app/generated_tests\test_20260219_001650.py,test_logs/20260219_001815.json
+20260219_002141,2026-02-19 00:21:41,"open browser go to https://www.youtube.com
+                search dooron doon song
+                wait 3000
+                click first video",failed,False,0,4,True,https://www.youtube.com,False,,0,,app/generated_tests\test_20260219_001918.py,test_logs/20260219_002141.json
+20260219_002506,2026-02-19 00:25:06,"open browser go to https://www.amazon.in
+                search wireless mouse",failed,False,0,2,True,https://www.amazon.in,False,,0,,app/generated_tests\test_20260219_002201.py,test_logs/20260219_002506.json
+20260219_002914,2026-02-19 00:29:14,open browser search for python tutorial,passed,True,0,2,True,https://google.com,False,,0,,app/generated_tests\test_20260219_002812.py,test_logs/20260219_002914.json
+20260219_003034,2026-02-19 00:30:34,search for weather take screenshot,passed,True,0,3,True,https://google.com,False,,1,,app/generated_tests\test_20260219_002930.py,test_logs/20260219_003034.json
+20260219_003256,2026-02-19 00:32:56,"open browser go to http://127.0.0.1:5500/login.html
+type admin into #username
+type admin123 into #password
+click #loginBtn",failed,False,0,4,True,http://127.0.0.1:5500/login.html,False,,0,,app/generated_tests\test_20260219_003151.py,test_logs/20260219_003256.json
+20260219_003443,2026-02-19 00:34:43,"open browser go to https://www.youtube.com
+search automation testing tutorial
+wait 3000
+click first video",failed,False,0,4,True,https://www.youtube.com,False,,0,,app/generated_tests\test_20260219_003212.py,test_logs/20260219_003443.json
+20260219_004517,2026-02-19 00:45:17,go to instagram check if logged in,passed,True,0,2,True,https://instagram.com,True,Not Logged In,0,,app/generated_tests\test_20260219_004411.py,test_logs/20260219_004517.json
+20260219_040324,2026-02-19 04:03:24,"open browser go to https://www.youtube.com
+                search dooriyan dooron song
+                wait 3000
+                click first video",failed,False,0,4,True,https://www.youtube.com,False,,0,,app/generated_tests\test_20260219_040058.py,test_logs/20260219_040324.json
+20260219_040451,2026-02-19 04:04:51,"open browser go to https://www.google.com
+                search python playwright tutorial",passed,True,0,2,True,https://www.google.com,False,,0,,app/generated_tests\test_20260219_040350.py,test_logs/20260219_040451.json
+20260219_040559,2026-02-19 04:05:59,"open browser go to https://www.amazon.in
+                search wireless mouse",passed,True,0,2,True,https://www.amazon.in,False,,0,,app/generated_tests\test_20260219_040502.py,test_logs/20260219_040559.json
+20260219_040750,2026-02-19 04:07:50,"open browser go to http://127.0.0.1:5500/login.html
+                type admin into #username
+                type admin123 into #password
+                click #loginBtn",failed,False,0,4,True,http://127.0.0.1:5500/login.html,False,,0,,app/generated_tests\test_20260219_040656.py,test_logs/20260219_040750.json
