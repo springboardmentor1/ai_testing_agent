@@ -61,3 +61,109 @@ Exception: Verification failed
 VERIFY RESULT: Success
 TEST FINISHED
 ",
+11,Open test page and verify login success,2,2.92,2026-02-19 22:48:22,FAILED,,"Traceback (most recent call last):
+  File ""C:\Users\perni\AppData\Local\Temp\tmpult5_sup.py"", line 30, in <module>
+    run_test()
+  File ""C:\Users\perni\AppData\Local\Temp\tmpult5_sup.py"", line 15, in run_test
+    page.goto('static/test.html', timeout=60000)
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\sync_api\_generated.py"", line 9050, in goto
+    self._sync(
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_sync_base.py"", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_page.py"", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_frame.py"", line 153, in goto
+    await self._channel.send(
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 559, in wrap_api_call
+    raise rewrite_error(error, f""{parsed_st['apiName']}: {error}"") from None
+playwright._impl._errors.Error: Page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL
+Call log:
+  - navigating to ""static/test.html"", waiting until ""load""
+
+"
+12,Open test page and verify login success,2,4.89,2026-02-19 22:49:11,FAILED,,"Traceback (most recent call last):
+  File ""C:\Users\perni\AppData\Local\Temp\tmp2_btxf8s.py"", line 30, in <module>
+    run_test()
+  File ""C:\Users\perni\AppData\Local\Temp\tmp2_btxf8s.py"", line 15, in run_test
+    page.goto('http://127.0.0.1:5000/test.html', timeout=60000)
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\sync_api\_generated.py"", line 9050, in goto
+    self._sync(
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_sync_base.py"", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_page.py"", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_frame.py"", line 153, in goto
+    await self._channel.send(
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 559, in wrap_api_call
+    raise rewrite_error(error, f""{parsed_st['apiName']}: {error}"") from None
+playwright._impl._errors.Error: Page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5000/test.html
+Call log:
+  - navigating to ""http://127.0.0.1:5000/test.html"", waiting until ""load""
+
+"
+13,Open test page and verify login success,2,5.74,2026-02-19 22:58:34,FAILED,"Please enter username/password manually and click Login
+","Traceback (most recent call last):
+  File ""C:\Users\perni\AppData\Local\Temp\tmpfnha593j.py"", line 30, in <module>
+    run_test()
+  File ""C:\Users\perni\AppData\Local\Temp\tmpfnha593j.py"", line 19, in run_test
+    page.wait_for_selector('#result', timeout=60000)
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\sync_api\_generated.py"", line 8213, in wait_for_selector
+    self._sync(
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_sync_base.py"", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_page.py"", line 419, in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_frame.py"", line 369, in wait_for_selector
+    await self._channel.send(
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 559, in wrap_api_call
+    raise rewrite_error(error, f""{parsed_st['apiName']}: {error}"") from None
+playwright._impl._errors.TargetClosedError: Page.wait_for_selector: Target page, context or browser has been closed
+Call log:
+  - waiting for locator(""#result"") to be visible
+    10 × locator resolved to hidden <p id=""result""></p>
+
+"
+14,Open flipkart and search for mobiles,2,11.53,2026-02-19 22:58:49,PASSED,"PAGE TITLE: Mobiles- Buy Products Online at Best Price in India - All Categories | Flipkart.com
+TEST FINISHED
+",
+15,Open flipkart and search for mobiles,2,8.97,2026-02-19 22:59:14,FAILED,,"Traceback (most recent call last):
+  File ""C:\Users\perni\AppData\Local\Temp\tmpcbu2x9qq.py"", line 37, in <module>
+    run_test()
+  File ""C:\Users\perni\AppData\Local\Temp\tmpcbu2x9qq.py"", line 30, in run_test
+    page.wait_for_timeout(6000)
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\sync_api\_generated.py"", line 11532, in wait_for_timeout
+    self._sync(self._impl_obj.wait_for_timeout(timeout=timeout))
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_sync_base.py"", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_page.py"", line 1101, in wait_for_timeout
+    await self._main_frame.wait_for_timeout(timeout)
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_frame.py"", line 862, in wait_for_timeout
+    await self._channel.send(""waitForTimeout"", None, {""waitTimeout"": timeout})
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 559, in wrap_api_call
+    raise rewrite_error(error, f""{parsed_st['apiName']}: {error}"") from None
+playwright._impl._errors.TargetClosedError: Page.wait_for_timeout: Target page, context or browser has been closed
+"
+16,Open test page and verify login success,2,0.17,2026-02-19 23:01:41,FAILED,,"  File ""C:\Users\perni\AppData\Local\Temp\tmpv961epoo.py"", line 15
+    page.goto('file://C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\static\test.html', timeout=60000)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 9-10: truncated \UXXXXXXXX escape
+"

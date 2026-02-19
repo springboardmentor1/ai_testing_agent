@@ -1,0 +1,13 @@
+streamlit
+flask
+pandas
+plotly
+playwright
+langgraph
+langchain
+langchain-groq
+python-dotenv
+
+
+ChatGroq (LLaMA 3.3 70B)
+playwright install

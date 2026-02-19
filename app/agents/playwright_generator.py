@@ -37,6 +37,8 @@ def generate_playwright_script(actions):
                 current_site = "flipkart"
             elif target == "test":
                 url ="file:///C://Users//perni//OneDrive//Desktop//AI_TESTING_AGENT//static//test.html"
+                import os
+                url = "file://" + os.path.abspath("static/test.html")
                 current_site = "test"
             else:
                 url = target
