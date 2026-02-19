@@ -1,0 +1,38 @@
+ID,Instruction,Steps,Duration (sec),Execution Time,Status,Logs,Errors
+1,Open google and search for laptops,2,30.88,2026-02-18 20:59:39,PASSED,"Waiting for Google results...
+PAGE TITLE: laptops - Google Search
+TEST FINISHED
+",
+2,Open flipkart and search for mobiles,2,8.25,2026-02-18 21:12:42,FAILED,,"Traceback (most recent call last):
+  File ""C:\Users\perni\AppData\Local\Temp\tmprgixvou_.py"", line 37, in <module>
+    run_test()
+  File ""C:\Users\perni\AppData\Local\Temp\tmprgixvou_.py"", line 30, in run_test
+    page.wait_for_timeout(6000)
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\sync_api\_generated.py"", line 11532, in wait_for_timeout
+    self._sync(self._impl_obj.wait_for_timeout(timeout=timeout))
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_sync_base.py"", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_page.py"", line 1101, in wait_for_timeout
+    await self._main_frame.wait_for_timeout(timeout)
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_frame.py"", line 862, in wait_for_timeout
+    await self._channel.send(""waitForTimeout"", None, {""waitTimeout"": timeout})
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File ""C:\Users\perni\OneDrive\Desktop\AI_TESTING_AGENT\.venv\Lib\site-packages\playwright\_impl\_connection.py"", line 559, in wrap_api_call
+    raise rewrite_error(error, f""{parsed_st['apiName']}: {error}"") from None
+playwright._impl._errors.TargetClosedError: Page.wait_for_timeout: Target page, context or browser has been closed
+"
+3,open amazon and search for laptop,2,14.88,2026-02-18 21:21:30,PASSED,"PAGE TITLE: Amazon.in : laptop
+TEST FINISHED
+",
+4,Open test page and verify login success,2,19.54,2026-02-18 21:23:09,FAILED,"Please enter username/password manually and click Login
+VERIFY RESULT: Failed
+","Traceback (most recent call last):
+  File ""C:\Users\perni\AppData\Local\Temp\tmpha0j_z8h.py"", line 30, in <module>
+    run_test()
+  File ""C:\Users\perni\AppData\Local\Temp\tmpha0j_z8h.py"", line 23, in run_test
+    raise Exception('Verification failed')
+Exception: Verification failed
+"

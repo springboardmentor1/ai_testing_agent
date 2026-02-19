@@ -36,7 +36,7 @@ def generate_playwright_script(actions):
                 url = "https://www.flipkart.com"
                 current_site = "flipkart"
             elif target == "test":
-                url = "http://127.0.0.1:5000/test.html"
+                url ="file:///C://Users//perni//OneDrive//Desktop//AI_TESTING_AGENT//static//test.html"
                 current_site = "test"
             else:
                 url = target
