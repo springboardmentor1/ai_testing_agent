@@ -36,3 +36,28 @@ VERIFY RESULT: Failed
     raise Exception('Verification failed')
 Exception: Verification failed
 "
+5,Open amazon and search for shoes,2,12.0,2026-02-19 21:57:31,PASSED,"PAGE TITLE: Amazon.in : shoes
+TEST FINISHED
+",
+6,Open flipkart and search for mobiles,2,10.68,2026-02-19 21:58:11,PASSED,"PAGE TITLE: Mobiles- Buy Products Online at Best Price in India - All Categories | Flipkart.com
+TEST FINISHED
+",
+7,Open amazon and search for shoes,2,9.85,2026-02-19 22:03:58,PASSED,"PAGE TITLE: Amazon.in : shoes
+TEST FINISHED
+",
+8,Open flipkart and search for mobiles,2,10.9,2026-02-19 22:09:30,PASSED,"PAGE TITLE: Mobiles- Buy Products Online at Best Price in India - All Categories | Flipkart.com
+TEST FINISHED
+",
+9,Open test page and verify login success,2,14.65,2026-02-19 22:19:31,FAILED,"Please enter username/password manually and click Login
+VERIFY RESULT: Failed
+","Traceback (most recent call last):
+  File ""C:\Users\perni\AppData\Local\Temp\tmp7zk4sl_p.py"", line 30, in <module>
+    run_test()
+  File ""C:\Users\perni\AppData\Local\Temp\tmp7zk4sl_p.py"", line 23, in run_test
+    raise Exception('Verification failed')
+Exception: Verification failed
+"
+10,Open test page and verify login success,2,21.7,2026-02-19 22:20:18,PASSED,"Please enter username/password manually and click Login
+VERIFY RESULT: Success
+TEST FINISHED
+",
