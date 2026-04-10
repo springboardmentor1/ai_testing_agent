@@ -1,4 +1,4 @@
-from instruction_parser import agent
+'''from instruction_parser import agent
 from executor import execute_test
 
 #Take test case input
@@ -24,4 +24,21 @@ print(f"Execution Time: {report['execution_time_sec']} seconds")
 print(f"Timestamp: {report['timestamp']}")
 
 if report["error"]:
-    print(f"Error: {report['error']}")
+    print(f"Error: {report['error']}")'''
+
+from instruction_parser import agent
+from executor import execute_test
+
+def run_test_case(test_case):
+
+    # Generate Playwright steps using AI
+    parser_result = agent.invoke({"input": test_case})
+    playwright_json = parser_result["output"]
+
+    print("\nGenerated Playwright JSON:")
+    print(playwright_json)
+
+    # Execute test
+    report = execute_test(playwright_json, test_case, headless=False)
+
+    return report

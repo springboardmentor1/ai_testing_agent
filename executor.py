@@ -49,6 +49,9 @@ def execute_test(test_json, headless=False):
         print("TEST EXECUTED SUCCESSFULLY")
         time.sleep(3)
         browser.close()'''
+import asyncio
+
+asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 from playwright.sync_api import sync_playwright
 from codegen import generate_action
 import time

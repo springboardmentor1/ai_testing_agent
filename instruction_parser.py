@@ -4,15 +4,13 @@ import re
 import os
 
 from dotenv import load_dotenv
-from google import genai
+import google.generativeai as genai
 from langgraph.graph import StateGraph, END
 
 #Load API key from .env
 load_dotenv()
 
-client = genai.Client(
-    api_key=os.getenv("GOOGLE_API_KEY")
-)
+client = genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 MODEL_NAME = "models/gemini-flash-latest"
 
@@ -95,11 +93,13 @@ ASSERTION RULES:
 
 
 def parse_instruction(state: ParserState) -> ParserState:
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=f"{SYSTEM_PROMPT}\n\nTest case:\n{state['input']}",
-        config={"temperature": 0}
-    )
+    model = genai.GenerativeModel(MODEL_NAME)
+    response = model.generate_content(
+    f"{SYSTEM_PROMPT}\n\nTest case:\n{state['input']}",
+    generation_config={
+        "temperature": 0
+    }
+)
 
     text = response.text.strip()
 
